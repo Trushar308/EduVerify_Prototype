@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EduVerify</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @keyframes aurora {
+        from {
+          background-position: 50% 50%, 50% 50%;
+        }
+        to {
+          background-position: 350% 50%, 350% 50%;
+        }
+      }
+      .aurora-background {
+        position: fixed;
+        height: 100vh;
+        width: 100vw;
+        top: 0;
+        left: 0;
+        z-index: -10;
+        background-image:
+          radial-gradient(ellipse 50% 80% at 20% 40%, hsla(258, 77%, 60%, 0.3), transparent),
+          radial-gradient(ellipse 50% 80% at 80% 50%, hsla(217, 75%, 55%, 0.3), transparent);
+        background-color: #020617;
+        background-size: 150% 150%;
+        animation: aurora 20s ease-in-out infinite alternate;
+      }
+      .aurora-background::before {
+        content: '';
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        background-image:
+            radial-gradient(ellipse 50% 80% at 50% -20%, hsla(217, 75%, 55%, 0.2), transparent),
+            radial-gradient(ellipse 50% 80% at 90% 80%, hsla(258, 77%, 60%, 0.2), transparent);
+        background-size: 150% 150%;
+        background-position: 0% 0%;
+        animation: aurora 30s ease-in-out infinite alternate-reverse;
+      }
+      @keyframes pulsate {
+        0%, 100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+        50% {
+            transform: scale(1.5);
+            opacity: 0.7;
+        }
+      }
+      .pulsate {
+        animation: pulsate 2s infinite;
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            colors: {
+              primary: {
+                "50": "#eff6ff",
+                "100": "#dbeafe",
+                "200": "#bfdbfe",
+                "300": "#93c5fd",
+                "400": "#60a5fa",
+                "500": "#3b82f6",
+                "600": "#2563eb",
+                "700": "#1d4ed8",
+                "800": "#1e40af",
+                "900": "#1e3a8a",
+                "950": "#172554"
+              },
+              indigo: {
+                "400": "#818cf8",
+                "500": "#6366f1",
+              },
+              slate: {
+                50: '#f8fafc',
+                100: '#f1f5f9',
+                200: '#e2e8f0',
+                300: '#cbd5e1',
+                400: '#94a3b8',
+                500: '#64748b',
+                600: '#475569',
+                700: '#334155',
+                800: '#1e293b',
+                900: '#0f172a',
+                950: '#020617',
+              }
+            },
+            animation: {
+              'scale-in': 'scaleIn 0.3s ease-out forwards',
+              'glow': 'glow 2.5s ease-in-out infinite alternate',
+              'tilt': 'tilt 10s infinite linear',
+              'bounce-once': 'bounceOnce 0.6s ease-in-out',
+            },
+            keyframes: {
+              scaleIn: {
+                '0%': { opacity: 0, transform: 'scale(0.95)' },
+                '100%': { opacity: 1, transform: 'scale(1)' },
+              },
+              glow: {
+                'from': { textShadow: '0 0 4px #fff, 0 0 8px #fff, 0 0 12px #6366f1, 0 0 16px #6366f1' },
+                'to': { textShadow: '0 0 8px #fff, 0 0 12px #fff, 0 0 16px #818cf8, 0 0 20px #818cf8' },
+              },
+              tilt: {
+                  '0%, 100%': { transform: 'rotate(0deg)' },
+                  '25%': { transform: 'rotate(0.2deg)' },
+                  '75%': { transform: 'rotate(-0.2deg)' },
+              },
+              bounceOnce: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-10%)' },
+              }
+            },
+          }
+        }
+      }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.11.0",
+    "recharts": "https://esm.sh/recharts@^3.1.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react": "https://esm.sh/react@^19.1.0",
+    "react-router-dom": "https://esm.sh/react-router-dom@^7.7.1"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="font-sans text-slate-200">
+    <div class="aurora-background"></div>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

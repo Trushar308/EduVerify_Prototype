@@ -1,0 +1,5 @@
+{
+  "name": "EduVerify",
+  "description": "An academic tool for teachers and students to manage classes, assignments, and submissions with AI-powered integrity checks.",
+  "requestFramePermissions": []
+}
