@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 import { UserRole } from '../types';
+import * as api from '../services/supabaseApi';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import { APP_NAME } from '../constants';
 import { GraduationCap } from '../components/icons/Icons';
+import { useToast } from '../contexts/ToastContext';
 
 const LoginPage: React.FC = () => {
   const [isLoginView, setIsLoginView] = useState(true);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [role, setRole] = useState<UserRole>(UserRole.STUDENT);
-  const { login, signUp, generateDummyData, loading } = useAuth();
+  const [isGeneratingData, setIsGeneratingData] = useState(false);
+  const { login, signUp, loading } = useAuth();
+  const { showToast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +27,18 @@ const LoginPage: React.FC = () => {
       }
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const handleGenerateDummyData = async () => {
+    try {
+      setIsGeneratingData(true);
+      await api.generateDummyData();
+      showToast('Demo data generated successfully!', 'success');
+    } catch (error: any) {
+      showToast(error.message || 'Failed to generate demo data', 'error');
+    } finally {
+      setIsGeneratingData(false);
     }
   };
 
@@ -84,7 +100,7 @@ const LoginPage: React.FC = () => {
                 </form>
             </div>
             <div className="mt-6 text-center">
-                <Button onClick={generateDummyData} variant="ghost" isLoading={loading}>
+                <Button onClick={handleGenerateDummyData} variant="ghost" isLoading={isGeneratingData}>
                     Generate Demo Data
                 </Button>
             </div>

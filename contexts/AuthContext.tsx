@@ -1,55 +1,45 @@
 
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { User, UserRole } from '../types';
-import * as api from '../services/mockApi';
+import * as api from '../services/supabaseApi';
 import { useToast } from './ToastContext';
 
 interface AuthContextType {
   user: User | null;
-  loading: boolean;
   login: (email: string) => Promise<void>;
   signUp: (name: string, email: string, role: UserRole) => Promise<void>;
   logout: () => void;
-  generateDummyData: () => Promise<void>;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const { showToast } = useToast();
 
+  // Check for stored user on initial load
   useEffect(() => {
-    const storedUser = sessionStorage.getItem('eduverify_user');
+    const storedUser = localStorage.getItem('eduverify_user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error('Error parsing stored user:', error);
+        localStorage.removeItem('eduverify_user');
+      }
     }
     setLoading(false);
   }, []);
 
-  const login = async (email: string) => {
-    setLoading(true);
+  const login = async (email: string): Promise<void> => {
     try {
-      const userData = await api.login(email);
-      setUser(userData);
-      sessionStorage.setItem('eduverify_user', JSON.stringify(userData));
-      showToast('Login successful!', 'success');
-    } catch (error: any) {
-      showToast(error.message, 'error');
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  const signUp = async (name: string, email: string, role: UserRole) => {
-    setLoading(true);
-    try {
-      const userData = await api.signUp(name, email, role);
-      setUser(userData);
-      sessionStorage.setItem('eduverify_user', JSON.stringify(userData));
-      showToast('Registration successful!', 'success');
+      setLoading(true);
+      const loggedInUser = await api.login(email);
+      setUser(loggedInUser);
+      localStorage.setItem('eduverify_user', JSON.stringify(loggedInUser));
+      showToast(`Welcome back, ${loggedInUser.name}!`, 'success');
     } catch (error: any) {
       showToast(error.message, 'error');
       throw error;
@@ -58,26 +48,42 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const logout = () => {
+  const signUp = async (name: string, email: string, role: UserRole): Promise<void> => {
+    try {
+      setLoading(true);
+      const newUser = await api.signUp(name, email, role);
+      setUser(newUser);
+      localStorage.setItem('eduverify_user', JSON.stringify(newUser));
+      showToast(`Welcome to EduVerify, ${newUser.name}!`, 'success');
+    } catch (error: any) {
+      showToast(error.message, 'error');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = async (): Promise<void> => {
+    try {
+      await api.supabase.auth.signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
     setUser(null);
-    sessionStorage.removeItem('eduverify_user');
-    showToast('Logged out successfully.', 'info');
+    localStorage.removeItem('eduverify_user');
+    showToast('Logged out successfully', 'success');
   };
 
-  const generateDummyData = async () => {
-    setLoading(true);
-    try {
-      await api.generateDummyData();
-      showToast('Dummy data generated! Try logging in as teacher@eduverify.com or one of the student emails.', 'success', 10000);
-    } catch (error: any) {
-      showToast('Failed to generate dummy data.', 'error');
-    } finally {
-      setLoading(false);
-    }
+  const value: AuthContextType = {
+    user,
+    login,
+    signUp,
+    logout,
+    loading
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, signUp, logout, generateDummyData }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

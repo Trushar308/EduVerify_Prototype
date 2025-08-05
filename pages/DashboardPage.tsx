@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { UserRole, Class } from '../types';
-import * as api from '../services/mockApi';
+import * as api from '../services/supabaseApi';
 import { Link } from 'react-router-dom';
 import Button from '../components/Button';
 import Input from '../components/Input';
@@ -74,11 +74,18 @@ const DashboardPage: React.FC = () => {
   const fetchClasses = useCallback(async () => {
     if (user) {
       setLoading(true);
-      const userClasses = await api.getClassesForUser(user.id, user.role);
-      setClasses(userClasses);
-      setLoading(false);
+      try {
+        const userClasses = await api.getClassesForUser(user.id, user.role);
+        setClasses(userClasses);
+      } catch (error: any) {
+        console.error('Error fetching classes:', error);
+        showToast('Failed to load classes. Please try again.', 'error');
+        setClasses([]);
+      } finally {
+        setLoading(false);
+      }
     }
-  }, [user]);
+  }, [user, showToast]);
 
   useEffect(() => {
     fetchClasses();

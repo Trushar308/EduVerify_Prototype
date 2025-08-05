@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { UserRole, Class, User, Assignment } from '../types';
-import * as api from '../services/mockApi';
+import * as api from '../services/supabaseApi';
 import Button from '../components/Button';
 import Input from '../components/Input';
 import Modal from '../components/Modal';

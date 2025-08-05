@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { UserRole, Assignment, Submission, User, AnalysisData } from '../types';
-import * as api from '../services/mockApi';
+import * as api from '../services/supabaseApi';
 import { useToast } from '../hooks/useToast';
 import { formatDate } from '../utils/helpers';
 import Button from '../components/Button';

@@ -2,16 +2,24 @@
 import { GoogleGenAI } from "@google/genai";
 import { GenerateContentResponse } from "@google/genai";
 
-const API_KEY = process.env.API_KEY;
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 if (!API_KEY) {
   console.warn("Gemini API key not found. Using fallback for content generation.");
 }
 
-const ai = new GoogleGenAI({ apiKey: API_KEY! });
+let ai: GoogleGenAI | null = null;
+
+try {
+  if (API_KEY) {
+    ai = new GoogleGenAI({ apiKey: API_KEY });
+  }
+} catch (error) {
+  console.warn("Failed to initialize Gemini AI:", error);
+}
 
 const generateContentWithFallback = async (prompt: string): Promise<string> => {
-    if (!API_KEY) {
+    if (!API_KEY || !ai) {
         return `This is fallback content for the prompt: "${prompt}". The Gemini API is a powerful tool for generating human-like text. For instance, it can write essays, summarize articles, and even create code. Tools like GPT-3 have revolutionized natural language processing. This text is intentionally simple for demonstration.`;
     }
     try {
